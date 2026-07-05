@@ -1,6 +1,29 @@
 (function () {
   'use strict';
 
+  // Theme toggle (light/dark)
+  var themeToggle = document.getElementById('theme-toggle');
+
+  function applyThemeLabel(theme) {
+    if (!themeToggle) return;
+    themeToggle.setAttribute(
+      'aria-label',
+      theme === 'dark' ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'
+    );
+  }
+
+  applyThemeLabel(document.documentElement.getAttribute('data-theme') || 'dark');
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function () {
+      var current = document.documentElement.getAttribute('data-theme') || 'dark';
+      var next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      applyThemeLabel(next);
+      try { localStorage.setItem('theme', next); } catch (e) { /* ignore */ }
+    });
+  }
+
   // Mobile nav toggle
   var toggle = document.getElementById('nav-toggle');
   var mobileNav = document.getElementById('mobile-nav');

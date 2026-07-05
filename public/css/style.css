@@ -1,18 +1,48 @@
 /* ==========================================================================
    LE HIEP STUDIO — Design tokens
    ========================================================================== */
-:root {
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
   --color-bg: #0a0a0a;
+  --color-bg-rgb: 10, 10, 10;
   --color-surface: #151515;
   --color-surface-2: #1d1d1d;
   --color-border: #2b2b2b;
+  --color-hairline: rgba(255, 255, 255, 0.06);
   --color-text: #f5f3ee;
+  --color-text-rgb: 245, 243, 238;
   --color-text-muted: #a8a29a;
   --color-accent: #cda45e;
   --color-accent-strong: #e3bd7a;
+  --color-accent-text: #cda45e;
   --color-danger: #e05252;
   --color-success: #7cc48a;
+  --icon-sun-display: none;
+  --icon-moon-display: block;
+}
 
+[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #faf8f4;
+  --color-bg-rgb: 250, 248, 244;
+  --color-surface: #ffffff;
+  --color-surface-2: #f2ede2;
+  --color-border: #e4ddd0;
+  --color-hairline: rgba(0, 0, 0, 0.08);
+  --color-text: #1c1917;
+  --color-text-rgb: 28, 25, 23;
+  --color-text-muted: #6b6459;
+  --color-accent: #cda45e;
+  --color-accent-strong: #e3bd7a;
+  --color-accent-text: #8a651f;
+  --color-danger: #b3261e;
+  --color-success: #2f8f52;
+  --icon-sun-display: block;
+  --icon-moon-display: none;
+}
+
+:root {
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -57,6 +87,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
 }
 
 img { max-width: 100%; display: block; }
@@ -86,7 +117,7 @@ p { margin: 0 0 var(--space-3); }
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent-strong);
+  outline: 2px solid var(--color-accent-text);
   outline-offset: 3px;
 }
 
@@ -94,7 +125,7 @@ p { margin: 0 0 var(--space-3); }
   font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   margin-bottom: var(--space-3);
 }
 .eyebrow.center { text-align: center; }
@@ -137,7 +168,7 @@ p { margin: 0 0 var(--space-3); }
 
 .btn-outline {
   background: transparent;
-  border-color: rgba(245,243,238,0.35);
+  border-color: rgba(var(--color-text-rgb), 0.35);
   color: var(--color-text);
 }
 .btn-outline:hover { border-color: var(--color-text); }
@@ -146,14 +177,33 @@ p { margin: 0 0 var(--space-3); }
 
 .btn-zalo { margin-top: var(--space-4); }
 
+/* Theme toggle ------------------------------------------------------------*/
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.theme-toggle:hover { border-color: var(--color-accent-text); }
+.theme-toggle:active { transform: scale(0.94); }
+.theme-toggle .icon-sun { display: var(--icon-sun-display); }
+.theme-toggle .icon-moon { display: var(--icon-moon-display); }
+
 /* Header ----------------------------------------------------------------- */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10,10,10,0.72);
+  background: rgba(var(--color-bg-rgb), 0.72);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid var(--color-hairline);
 }
 
 .header-inner {
@@ -169,7 +219,7 @@ p { margin: 0 0 var(--space-3); }
   font-weight: 600;
   letter-spacing: 0.04em;
 }
-.brand span { color: var(--color-accent); }
+.brand span { color: var(--color-accent-text); }
 
 .main-nav {
   display: none;
@@ -181,6 +231,12 @@ p { margin: 0 0 var(--space-3); }
   transition: color var(--dur-fast) var(--ease-out);
 }
 .main-nav a:hover { color: var(--color-text); }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
 
 .header-cta { display: none; }
 
@@ -215,7 +271,7 @@ p { margin: 0 0 var(--space-3); }
 
 .mobile-nav {
   background: var(--color-bg);
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid var(--color-hairline);
 
   max-height: 0;
   overflow: hidden;
@@ -333,7 +389,7 @@ p { margin: 0 0 var(--space-3); }
   display: block;
   font-family: var(--font-display);
   font-size: clamp(22px, 3vw, 30px);
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   margin-bottom: var(--space-1);
 }
 .trust-item span {
@@ -356,15 +412,15 @@ p { margin: 0 0 var(--space-3); }
   object-fit: cover;
 }
 .about-copy h2 { margin-bottom: var(--space-4); font-size: clamp(28px, 4vw, 40px); }
-.about-copy p { color: var(--color-text-muted); }
+.about-copy p:not(.eyebrow) { color: var(--color-text-muted); }
 .link-underline {
   display: inline-block;
   margin-top: var(--space-2);
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   border-bottom: 1px solid transparent;
   transition: border-color var(--dur-fast) var(--ease-out);
 }
-.link-underline:hover { border-color: var(--color-accent); }
+.link-underline:hover { border-color: var(--color-accent-text); }
 
 @media (min-width: 1024px) {
   .about-grid {
@@ -388,13 +444,13 @@ p { margin: 0 0 var(--space-3); }
   transition: border-color var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
 }
 .service-card:hover {
-  border-color: var(--color-accent);
+  border-color: var(--color-accent-text);
   transform: translateY(-4px);
 }
 .service-index {
   display: block;
   font-family: var(--font-display);
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-size: 24px;
   margin-bottom: var(--space-3);
 }
@@ -451,7 +507,7 @@ p { margin: 0 0 var(--space-3); }
   gap: var(--space-6);
 }
 .contact-info h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: var(--space-4); }
-.contact-info p { color: var(--color-text-muted); }
+.contact-info p:not(.eyebrow) { color: var(--color-text-muted); }
 
 .contact-list {
   list-style: none;
@@ -500,7 +556,7 @@ p { margin: 0 0 var(--space-3); }
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  border-color: var(--color-accent);
+  border-color: var(--color-accent-text);
   outline: none;
 }
 .field-hidden {
@@ -538,7 +594,7 @@ p { margin: 0 0 var(--space-3); }
   gap: var(--space-4);
   font-size: 14px;
 }
-.footer-links a:hover { color: var(--color-accent); }
+.footer-links a:hover { color: var(--color-accent-text); }
 .footer-bottom {
   padding-top: var(--space-4);
   font-size: 12px;
@@ -578,7 +634,7 @@ p { margin: 0 0 var(--space-3); }
   align-items: center;
 }
 .not-found h1 { font-size: clamp(32px, 5vw, 56px); margin-bottom: var(--space-3); }
-.not-found p { color: var(--color-text-muted); margin-bottom: var(--space-5); }
+.not-found p:not(.eyebrow) { color: var(--color-text-muted); margin-bottom: var(--space-5); }
 
 /* Scroll reveal ---------------------------------------------------------*/
 .reveal {
