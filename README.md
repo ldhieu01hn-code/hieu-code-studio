@@ -18,13 +18,17 @@ npm start                # chạy như production
 
 Mở trình duyệt tại http://localhost:3000
 
-## 2. Thay ảnh thật thay cho ảnh minh hoạ
+## 2. Thay / thêm ảnh
 
-Hiện tại toàn bộ ảnh (hero, about, portfolio) đang dùng ảnh minh hoạ từ picsum.photos để giữ dung lượng nhẹ khi bàn giao. Khi có ảnh thật:
+Ảnh hero, about và portfolio đang dùng ảnh thật từ studio, đặt tại:
 
-1. Bỏ ảnh vào thư mục `public/images/` (ví dụ `public/images/portfolio/01.jpg`)
-2. Mở `server.js`, sửa mảng `STUDIO.portfolio` — đổi link `https://picsum.photos/seed/...` trong `views/index.ejs` thành `/images/portfolio/01.jpg`
-3. Làm tương tự cho ảnh hero (`.hero-bg`) và ảnh about (`.about-media img`)
+```
+public/images/hero.jpg           # ảnh nền hero
+public/images/about.jpg          # ảnh phần Giới thiệu
+public/images/portfolio/01.jpg   # 8 ảnh portfolio, đặt tên 01.jpg → 08.jpg
+```
+
+Muốn đổi ảnh portfolio hoặc thêm/bớt ảnh: sửa mảng `STUDIO.portfolio` trong `server.js` (mỗi ảnh gồm `file` và `caption`), rồi bỏ file ảnh tương ứng vào `public/images/portfolio/`.
 
 ## 3. Form liên hệ / thu thập Zalo
 
@@ -76,7 +80,9 @@ le-hiep-studio/
 │   └── partials/
 ├── public/
 │   ├── css/style.css
-│   └── js/main.js
+│   ├── js/main.js
+│   ├── js/theme-init.js   # chống nhấp nháy khi tải trang do chế độ sáng/tối
+│   └── images/
 ├── data/leads.json         # Danh sách khách để lại thông tin (tự tạo khi có người gửi form)
 └── .env.example
 ```

@@ -10,12 +10,12 @@
 <main>
   <!-- HERO -->
   <section class="hero">
-    <img class="hero-bg" src="https://picsum.photos/seed/lehiep-hero/1920/1080" alt="" loading="eager" width="1920" height="1080">
+    <img class="hero-bg" src="/images/hero.jpg" alt="" loading="eager" width="1365" height="2048">
     <div class="hero-scrim"></div>
     <div class="container hero-content">
       <p class="eyebrow reveal">Studio nhiếp ảnh nghệ thuật · Hà Nội</p>
-      <h1 class="hero-title reveal">LE HIEP<br><span>STUDIO</span></h1>
-      <p class="hero-sub reveal"><%= studio.tagline %> — Cưới hỏi · Hiếu hỷ · Sinh nhật · Gia đình tại nhà</p>
+      <h1 class="hero-title reveal">LE HIEP STUDIO</h1>
+      <p class="hero-sub reveal">Nghệ thuật kể chuyện bằng ánh sáng, sắc màu và những khung hình mang đậm dấu ấn văn hoá Việt.</p>
       <div class="hero-actions reveal">
         <a href="#contact" class="btn btn-primary">Đặt lịch chụp</a>
         <a href="<%= studio.zaloUrl %>" target="_blank" rel="noopener" class="btn btn-outline">Nhắn Zalo ngay</a>
@@ -35,11 +35,7 @@
       </div>
       <div class="trust-item reveal">
         <strong><%= studio.location %></strong>
-        <span>phục vụ chụp ảnh tại nhà</span>
-      </div>
-      <div class="trust-item reveal">
-        <strong>4</strong>
-        <span>dịch vụ chuyên biệt</span>
+        <span>và các vùng lân cận</span>
       </div>
       <div class="trust-item reveal">
         <strong><%= studio.phone %></strong>
@@ -52,26 +48,26 @@
   <section class="about" id="about">
     <div class="container about-grid">
       <div class="about-media reveal">
-        <img src="https://picsum.photos/seed/lehiep-about/900/1100" alt="Le Hiep Studio tác nghiệp" loading="lazy" width="900" height="1100">
+        <img src="/images/about.jpg" alt="Le Hiep Studio - chụp ảnh nghệ thuật bên Hồ Gươm, Hà Nội" loading="lazy" width="2048" height="1365">
       </div>
       <div class="about-copy reveal">
         <p class="eyebrow">Giới thiệu</p>
-        <h2>Ghi lại khoảnh khắc,<br>kể câu chuyện của bạn</h2>
-        <p>Le Hiep Studio là người sáng tạo nội dung số, chuyên chụp ảnh nghệ thuật tại Hà Nội với hơn <strong><%= studio.followers %></strong> người theo dõi. Chúng tôi nhận chụp cưới hỏi, hiếu hỷ, sinh nhật và gia đình tại nhà — mang không gian quen thuộc và cảm xúc chân thật vào từng khung hình.</p>
-        <p>Mỗi buổi chụp là một câu chuyện riêng. Chúng tôi lắng nghe, đồng hành và ghi lại những khoảnh khắc đáng nhớ nhất theo phong cách nghệ thuật, tinh tế và giàu cảm xúc.</p>
+        <h2>Nhiếp ảnh không chỉ<br>để ghi lại, mà để kể chuyện</h2>
+        <p>Le Hiep Studio là người sáng tạo nội dung số tại Hà Nội, được hơn <strong><%= studio.followers %></strong> người theo dõi tin tưởng. Chúng tôi theo đuổi nhiếp ảnh ý tưởng — nơi trang phục, bối cảnh, ánh sáng và hậu kỳ cùng hoà quyện để tạo nên một tác phẩm, không đơn thuần là một bức ảnh.</p>
+        <p>Từ những mái chùa cổ kính, sắc hoa bốn mùa đến hồn cốt văn hoá Việt trong từng thước vải áo dài — mỗi khung hình là một câu chuyện riêng, được kể theo cách riêng của bạn.</p>
         <a href="<%= studio.facebookUrl %>" target="_blank" rel="noopener" class="link-underline">Xem thêm trên Facebook →</a>
       </div>
     </div>
   </section>
 
-  <!-- SERVICES -->
+  <!-- STYLE PILLARS -->
   <section class="services" id="services">
     <div class="container">
-      <p class="eyebrow reveal center">Dịch vụ</p>
-      <h2 class="section-title reveal center">Chúng tôi chụp gì?</h2>
+      <p class="eyebrow reveal center">Dấu ấn phong cách</p>
+      <h2 class="section-title reveal center">Điều làm nên một bức ảnh Le Hiep</h2>
 
       <div class="services-grid">
-        <% studio.services.forEach(function(s, i){ %>
+        <% studio.pillars.forEach(function(s, i){ %>
         <div class="service-card reveal" style="--i: <%= i %>">
           <span class="service-index">0<%= i + 1 %></span>
           <h3><%= s.name %></h3>
@@ -87,13 +83,13 @@
     <div class="container">
       <p class="eyebrow reveal center">Portfolio</p>
       <h2 class="section-title reveal center">Một vài khoảnh khắc</h2>
-      <p class="section-sub reveal center">Ảnh minh hoạ — bộ ảnh thực tế sẽ được cập nhật từ các buổi chụp của studio.</p>
+      <p class="section-sub reveal center">Trích từ những bộ ảnh nghệ thuật thực tế của studio.</p>
 
       <div class="portfolio-grid">
         <% studio.portfolio.forEach(function(p, i){ %>
         <figure class="portfolio-item reveal" style="--i: <%= i %>">
-          <img src="https://picsum.photos/seed/<%= p.seed %>/700/900" alt="Ảnh <%= p.category %> - Le Hiep Studio" loading="lazy" width="700" height="900">
-          <figcaption><%= p.category %></figcaption>
+          <img src="/images/portfolio/<%= p.file %>" alt="<%= p.caption %> - Le Hiep Studio" loading="lazy" width="700" height="900">
+          <figcaption><%= p.caption %></figcaption>
         </figure>
         <% }); %>
       </div>
@@ -140,12 +136,11 @@
         </div>
 
         <div class="field">
-          <label for="service">Dịch vụ quan tâm</label>
+          <label for="service">Bạn muốn chụp theo phong cách nào?</label>
           <select id="service" name="service">
-            <% studio.services.forEach(function(s){ %>
-            <option value="<%= s.name %>"><%= s.name %></option>
+            <% studio.inquiryOptions.forEach(function(o){ %>
+            <option value="<%= o %>"><%= o %></option>
             <% }); %>
-            <option value="Khác">Khác</option>
           </select>
         </div>
 

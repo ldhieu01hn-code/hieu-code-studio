@@ -19,21 +19,27 @@ const STUDIO = {
   facebookUrl: process.env.STUDIO_FACEBOOK_URL || 'https://www.facebook.com/le.hiep.7545',
   followers: '51K',
   location: 'Hà Nội',
-  services: [
-    { key: 'cuoi-hoi', name: 'Chụp Cưới Hỏi', desc: 'Lưu giữ trọn vẹn khoảnh khắc ngày trọng đại với phong cách nghệ thuật, chân thực và giàu cảm xúc.' },
-    { key: 'hieu-hy', name: 'Chụp Hiếu Hỷ', desc: 'Ghi lại những dịp trọng đại của gia đình một cách trang trọng, tinh tế và đầy ý nghĩa.' },
-    { key: 'sinh-nhat', name: 'Chụp Sinh Nhật', desc: 'Bộ ảnh sinh nhật sống động, đầy màu sắc, lưu giữ niềm vui của bé và gia đình.' },
-    { key: 'gia-dinh', name: 'Chụp Gia Đình Tại Nhà', desc: 'Không gian quen thuộc, khoảnh khắc tự nhiên — dịch vụ chụp ảnh gia đình ngay tại nhà bạn.' }
+  pillars: [
+    { key: 'concept', name: 'Ý tưởng & Concept', desc: 'Mỗi bộ ảnh được xây dựng như một câu chuyện riêng — từ trang phục, đạo cụ đến bối cảnh.' },
+    { key: 'di-san', name: 'Bối cảnh & Di sản', desc: 'Khai thác vẻ đẹp kiến trúc cổ, thiên nhiên và văn hoá truyền thống quanh Hà Nội.' },
+    { key: 'anh-sang', name: 'Ánh sáng tự nhiên', desc: 'Tận dụng ánh sáng vàng, khoảnh khắc hoàng hôn để tạo chiều sâu và cảm xúc cho khung hình.' },
+    { key: 'hau-ky', name: 'Hậu kỳ điện ảnh', desc: 'Màu sắc và hậu kỳ được chăm chút tỉ mỉ, mang dấu ấn riêng, giàu chất điện ảnh.' }
+  ],
+  inquiryOptions: [
+    'Chân dung nghệ thuật',
+    'Concept cổ trang / áo dài',
+    'Ngoại cảnh thiên nhiên',
+    'Theo ý tưởng riêng'
   ],
   portfolio: [
-    { seed: 'lehiep-01', category: 'Cưới hỏi' },
-    { seed: 'lehiep-02', category: 'Gia đình' },
-    { seed: 'lehiep-03', category: 'Chân dung' },
-    { seed: 'lehiep-04', category: 'Sinh nhật' },
-    { seed: 'lehiep-05', category: 'Cưới hỏi' },
-    { seed: 'lehiep-06', category: 'Gia đình' },
-    { seed: 'lehiep-07', category: 'Chân dung' },
-    { seed: 'lehiep-08', category: 'Hiếu hỷ' }
+    { file: '01.jpg', caption: 'Sen & ánh sáng' },
+    { file: '02.jpg', caption: 'Cổ trang Việt' },
+    { file: '03.jpg', caption: 'Mùa hoa phượng' },
+    { file: '04.jpg', caption: 'Chân dung sen' },
+    { file: '05.jpg', caption: 'Góc nhìn từ trên cao' },
+    { file: '06.jpg', caption: 'Cổng chùa cổ kính' },
+    { file: '07.jpg', caption: 'Vườn hoa rực rỡ' },
+    { file: '08.jpg', caption: 'Tháp cổ hoàng hôn' }
   ]
 };
 
@@ -45,7 +51,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", 'data:', 'https://picsum.photos', 'https://fastly.picsum.photos'],
+      imgSrc: ["'self'", 'data:'],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       scriptSrc: ["'self'"]
