@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<%- include('partials/head') %>
+</head>
+<body>
+<%- include('partials/nav') %>
+<main>
+  <section class="not-found">
+    <div class="container">
+      <p class="eyebrow">404</p>
+      <h1>Không tìm thấy trang</h1>
+      <p>Trang bạn tìm không tồn tại hoặc đã được di chuyển.</p>
+      <a href="/" class="btn btn-primary">Về trang chủ</a>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>
+<script src="/js/main.js?v=<%= assetVersion %>" defer></script>
+</body>
+</html>

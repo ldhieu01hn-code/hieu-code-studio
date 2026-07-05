@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<%- include('partials/head') %>
+</head>
+<body id="top">
+
+<%- include('partials/nav') %>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <img class="hero-bg" src="https://picsum.photos/seed/lehiep-hero/1920/1080" alt="" loading="eager" width="1920" height="1080">
+    <div class="hero-scrim"></div>
+    <div class="container hero-content">
+      <p class="eyebrow reveal">Studio nhiếp ảnh nghệ thuật · Hà Nội</p>
+      <h1 class="hero-title reveal">LE HIEP<br><span>STUDIO</span></h1>
+      <p class="hero-sub reveal"><%= studio.tagline %> — Cưới hỏi · Hiếu hỷ · Sinh nhật · Gia đình tại nhà</p>
+      <div class="hero-actions reveal">
+        <a href="#contact" class="btn btn-primary">Đặt lịch chụp</a>
+        <a href="<%= studio.zaloUrl %>" target="_blank" rel="noopener" class="btn btn-outline">Nhắn Zalo ngay</a>
+      </div>
+    </div>
+    <a href="#about" class="scroll-cue" aria-label="Cuộn xuống">
+      <span></span>
+    </a>
+  </section>
+
+  <!-- TRUST BAR -->
+  <section class="trust-bar">
+    <div class="container trust-inner">
+      <div class="trust-item reveal">
+        <strong><%= studio.followers %></strong>
+        <span>người theo dõi trên Facebook</span>
+      </div>
+      <div class="trust-item reveal">
+        <strong><%= studio.location %></strong>
+        <span>phục vụ chụp ảnh tại nhà</span>
+      </div>
+      <div class="trust-item reveal">
+        <strong>4</strong>
+        <span>dịch vụ chuyên biệt</span>
+      </div>
+      <div class="trust-item reveal">
+        <strong><%= studio.phone %></strong>
+        <span>hotline / Zalo đặt lịch</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="container about-grid">
+      <div class="about-media reveal">
+        <img src="https://picsum.photos/seed/lehiep-about/900/1100" alt="Le Hiep Studio tác nghiệp" loading="lazy" width="900" height="1100">
+      </div>
+      <div class="about-copy reveal">
+        <p class="eyebrow">Giới thiệu</p>
+        <h2>Ghi lại khoảnh khắc,<br>kể câu chuyện của bạn</h2>
+        <p>Le Hiep Studio là người sáng tạo nội dung số, chuyên chụp ảnh nghệ thuật tại Hà Nội với hơn <strong><%= studio.followers %></strong> người theo dõi. Chúng tôi nhận chụp cưới hỏi, hiếu hỷ, sinh nhật và gia đình tại nhà — mang không gian quen thuộc và cảm xúc chân thật vào từng khung hình.</p>
+        <p>Mỗi buổi chụp là một câu chuyện riêng. Chúng tôi lắng nghe, đồng hành và ghi lại những khoảnh khắc đáng nhớ nhất theo phong cách nghệ thuật, tinh tế và giàu cảm xúc.</p>
+        <a href="<%= studio.facebookUrl %>" target="_blank" rel="noopener" class="link-underline">Xem thêm trên Facebook →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <div class="container">
+      <p class="eyebrow reveal center">Dịch vụ</p>
+      <h2 class="section-title reveal center">Chúng tôi chụp gì?</h2>
+
+      <div class="services-grid">
+        <% studio.services.forEach(function(s, i){ %>
+        <div class="service-card reveal" style="--i: <%= i %>">
+          <span class="service-index">0<%= i + 1 %></span>
+          <h3><%= s.name %></h3>
+          <p><%= s.desc %></p>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section class="portfolio" id="portfolio">
+    <div class="container">
+      <p class="eyebrow reveal center">Portfolio</p>
+      <h2 class="section-title reveal center">Một vài khoảnh khắc</h2>
+      <p class="section-sub reveal center">Ảnh minh hoạ — bộ ảnh thực tế sẽ được cập nhật từ các buổi chụp của studio.</p>
+
+      <div class="portfolio-grid">
+        <% studio.portfolio.forEach(function(p, i){ %>
+        <figure class="portfolio-item reveal" style="--i: <%= i %>">
+          <img src="https://picsum.photos/seed/<%= p.seed %>/700/900" alt="Ảnh <%= p.category %> - Le Hiep Studio" loading="lazy" width="700" height="900">
+          <figcaption><%= p.category %></figcaption>
+        </figure>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="container contact-grid">
+      <div class="contact-info reveal">
+        <p class="eyebrow">Liên hệ</p>
+        <h2>Đặt lịch chụp<br>ngay hôm nay</h2>
+        <p>Để lại số Zalo, Le Hiep Studio sẽ liên hệ tư vấn và sắp xếp lịch chụp phù hợp nhất cho bạn.</p>
+
+        <ul class="contact-list">
+          <li>
+            <span>Hotline / Zalo</span>
+            <a href="tel:<%= studio.phone %>"><%= studio.phone %></a>
+          </li>
+          <li>
+            <span>Khu vực</span>
+            <a>Hà Nội &amp; lân cận</a>
+          </li>
+          <li>
+            <span>Facebook</span>
+            <a href="<%= studio.facebookUrl %>" target="_blank" rel="noopener">Le Hiep Studio</a>
+          </li>
+        </ul>
+
+        <a href="<%= studio.zaloUrl %>" target="_blank" rel="noopener" class="btn btn-primary btn-zalo">
+          Nhắn Zalo trực tiếp
+        </a>
+      </div>
+
+      <form class="contact-form reveal" id="contact-form" novalidate>
+        <div class="field">
+          <label for="name">Họ và tên <span aria-hidden="true">*</span></label>
+          <input type="text" id="name" name="name" autocomplete="name" required minlength="2">
+        </div>
+
+        <div class="field">
+          <label for="phone">Số điện thoại / Zalo <span aria-hidden="true">*</span></label>
+          <input type="tel" id="phone" name="phone" autocomplete="tel" required placeholder="09xxxxxxxx">
+        </div>
+
+        <div class="field">
+          <label for="service">Dịch vụ quan tâm</label>
+          <select id="service" name="service">
+            <% studio.services.forEach(function(s){ %>
+            <option value="<%= s.name %>"><%= s.name %></option>
+            <% }); %>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="message">Lời nhắn (không bắt buộc)</label>
+          <textarea id="message" name="message" rows="3" maxlength="1000"></textarea>
+        </div>
+
+        <!-- honeypot chống bot, an voi nguoi dung that -->
+        <div class="field field-hidden" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Gửi thông tin</button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>
+
+<script src="/js/main.js?v=<%= assetVersion %>" defer></script>
+</body>
+</html>

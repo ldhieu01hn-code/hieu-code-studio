@@ -1,0 +1,23 @@
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="brand">LE HIEP <span>STUDIO</span></span>
+      <p><%= studio.tagline %> · <%= studio.location %></p>
+    </div>
+
+    <div class="footer-links">
+      <a href="tel:<%= studio.phone %>"><%= studio.phone %></a>
+      <a href="<%= studio.zaloUrl %>" target="_blank" rel="noopener">Zalo</a>
+      <a href="<%= studio.facebookUrl %>" target="_blank" rel="noopener">Facebook</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; <%= new Date().getFullYear() %> Le Hiep Studio. All rights reserved.</p>
+  </div>
+</footer>
+
+<a class="zalo-float" href="<%= studio.zaloUrl %>" target="_blank" rel="noopener" aria-label="Nhắn tin Zalo cho Le Hiep Studio">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M12 2C6.48 2 2 5.94 2 10.8c0 2.77 1.47 5.24 3.77 6.86-.12.9-.45 2.19-1.27 3.32 0 0 1.9-.15 3.9-1.53.98.28 2.03.43 3.6.43 5.52 0 10-3.94 10-8.8C22 5.94 17.52 2 12 2z" fill="currentColor"/>
+  </svg>
+</a>
