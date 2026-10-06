@@ -1,15 +1,20 @@
 require('dotenv').config();
 
 const path = require('path');
-const fs = require('fs');
 const express = require('express');
+const session = require('express-session');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const nodemailer = require('nodemailer');
 
+const { loadSettings, saveSettings } = require('./lib/settings');
+const { listLeads, saveLead } = require('./lib/leads');
+const { callAI } = require('./lib/ai');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+const IS_PROD = process.env.NODE_ENV === 'production';
 
 const STUDIO = {
   name: 'LE HIEP STUDIO',
@@ -45,6 +50,7 @@ const STUDIO = {
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.set('trust proxy', 1);
 app.locals.assetVersion = Date.now();
 
 app.use(helmet({
@@ -62,8 +68,21 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0,
+  maxAge: IS_PROD ? '7d' : 0,
   etag: true
+}));
+
+app.use(session({
+  name: 'lhs.sid',
+  secret: process.env.SESSION_SECRET || 'change-me-in-env-please',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: IS_PROD,
+    maxAge: 8 * 60 * 60 * 1000
+  }
 }));
 
 const contactLimiter = rateLimit({
@@ -74,16 +93,21 @@ const contactLimiter = rateLimit({
   message: { ok: false, error: 'Bạn gửi hơi nhiều, vui lòng thử lại sau ít phút.' }
 });
 
-const LEADS_FILE = path.join(__dirname, 'data', 'leads.json');
-function saveLead(lead) {
-  fs.mkdirSync(path.dirname(LEADS_FILE), { recursive: true });
-  let leads = [];
-  if (fs.existsSync(LEADS_FILE)) {
-    try { leads = JSON.parse(fs.readFileSync(LEADS_FILE, 'utf8')); } catch (_) { leads = []; }
-  }
-  leads.push(lead);
-  fs.writeFileSync(LEADS_FILE, JSON.stringify(leads, null, 2), 'utf8');
-}
+const chatLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: 'Bạn chat hơi nhiều, vui lòng thử lại sau ít phút hoặc nhắn Zalo trực tiếp.' }
+});
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Đăng nhập sai quá nhiều lần, vui lòng thử lại sau ít phút.'
+});
 
 let transporter = null;
 if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
@@ -95,16 +119,33 @@ if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
   });
 }
 
+function notifyNewLead(lead) {
+  if (!transporter || !process.env.NOTIFY_EMAIL) return;
+  transporter.sendMail({
+    from: process.env.SMTP_USER,
+    to: process.env.NOTIFY_EMAIL,
+    subject: `[LE HIEP STUDIO] Khách mới: ${lead.name}`,
+    text: `Tên: ${lead.name}\nSĐT/Zalo: ${lead.phone}\nNguồn: ${lead.source}\nDịch vụ/ghi chú: ${lead.note || lead.service || ''}\nNgày hẹn: ${lead.bookingDate || 'chưa chốt'}\nThời gian: ${lead.createdAt}`
+  }).catch((err) => console.error('Send mail error:', err.message));
+}
+
 const VN_PHONE_RE = /^(0|\+84)(\d){9,10}$/;
 
+function requireAdmin(req, res, next) {
+  if (req.session && req.session.isAdmin) return next();
+  return res.redirect('/admin/login');
+}
+
+// ---------- Public routes ----------
+
 app.get('/', (req, res) => {
-  res.render('index', { studio: STUDIO });
+  const settings = loadSettings();
+  res.render('index', { studio: STUDIO, aiChatEnabled: settings.aiEnabled && !!settings.apiKey });
 });
 
 app.post('/api/contact', contactLimiter, async (req, res) => {
   const { name, phone, service, message, website } = req.body;
 
-  // honeypot: bot da dien vao truong an
   if (website) {
     return res.json({ ok: true });
   }
@@ -124,25 +165,140 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
     phone: cleanPhone,
     service: service || 'Chưa chọn',
     message: (message || '').trim().slice(0, 1000),
+    source: 'form',
     createdAt: new Date().toISOString()
   };
 
   try {
     saveLead(lead);
-
-    if (transporter && process.env.NOTIFY_EMAIL) {
-      await transporter.sendMail({
-        from: process.env.SMTP_USER,
-        to: process.env.NOTIFY_EMAIL,
-        subject: `[LE HIEP STUDIO] Khách mới: ${lead.name}`,
-        text: `Tên: ${lead.name}\nSĐT/Zalo: ${lead.phone}\nDịch vụ: ${lead.service}\nLời nhắn: ${lead.message}\nThời gian: ${lead.createdAt}`
-      }).catch((err) => console.error('Send mail error:', err.message));
-    }
-
+    notifyNewLead(lead);
     return res.json({ ok: true });
   } catch (err) {
     console.error('Save lead error:', err);
     return res.status(500).json({ ok: false, error: 'Có lỗi xảy ra, vui lòng thử lại hoặc nhắn Zalo trực tiếp.' });
+  }
+});
+
+app.post('/api/chat', chatLimiter, async (req, res) => {
+  const settings = loadSettings();
+
+  if (!settings.aiEnabled || !settings.apiKey) {
+    return res.json({
+      ok: true,
+      reply: `Hiện trợ lý AI đang tạm nghỉ. Bạn nhắn trực tiếp Zalo ${STUDIO.phone} để được tư vấn nhanh nhất nhé!`
+    });
+  }
+
+  const message = String(req.body.message || '').trim().slice(0, 1000);
+  const history = Array.isArray(req.body.history) ? req.body.history.slice(-20) : [];
+
+  if (!message) {
+    return res.status(400).json({ ok: false, error: 'Vui lòng nhập nội dung.' });
+  }
+
+  try {
+    const { cleanText, lead } = await callAI({ settings, studio: STUDIO, history, message });
+
+    if (lead) {
+      const fullLead = {
+        name: lead.name,
+        phone: lead.phone,
+        bookingDate: lead.bookingDate || '',
+        note: lead.note || '',
+        service: 'Tư vấn qua AI chat',
+        source: 'ai-chat',
+        createdAt: new Date().toISOString()
+      };
+      saveLead(fullLead);
+      notifyNewLead(fullLead);
+    }
+
+    return res.json({ ok: true, reply: cleanText, leadSaved: !!lead });
+  } catch (err) {
+    console.error('AI chat error:', err.message);
+    return res.status(502).json({
+      ok: false,
+      error: `Trợ lý AI đang gặp sự cố. Bạn nhắn trực tiếp Zalo ${STUDIO.phone} giúp mình nhé!`
+    });
+  }
+});
+
+// ---------- Admin routes ----------
+
+app.get('/admin/login', (req, res) => {
+  if (req.session && req.session.isAdmin) return res.redirect('/admin');
+  res.render('admin/login', { studio: STUDIO, error: null });
+});
+
+app.post('/admin/login', loginLimiter, (req, res) => {
+  const configured = process.env.ADMIN_PASSWORD;
+
+  if (!configured) {
+    return res.status(500).render('admin/login', {
+      studio: STUDIO,
+      error: 'Chưa cấu hình ADMIN_PASSWORD trong file .env trên server. Vui lòng thêm biến này rồi khởi động lại ứng dụng.'
+    });
+  }
+
+  if (req.body.password === configured) {
+    req.session.isAdmin = true;
+    return res.redirect('/admin');
+  }
+
+  return res.status(401).render('admin/login', { studio: STUDIO, error: 'Sai mật khẩu, vui lòng thử lại.' });
+});
+
+app.post('/admin/logout', (req, res) => {
+  req.session.destroy(() => res.redirect('/admin/login'));
+});
+
+app.get('/admin', requireAdmin, (req, res) => {
+  const settings = loadSettings();
+  const leads = listLeads().slice().reverse();
+  res.render('admin/dashboard', {
+    studio: STUDIO,
+    settings: { ...settings, apiKey: settings.apiKey ? '••••••••' : '' },
+    hasApiKey: !!settings.apiKey,
+    leads,
+    saved: req.query.saved === '1'
+  });
+});
+
+app.post('/admin/settings', requireAdmin, (req, res) => {
+  const current = loadSettings();
+  const { aiEnabled, apiBaseUrl, apiKey, model, salesProcess } = req.body;
+
+  saveSettings({
+    aiEnabled: aiEnabled === 'on',
+    apiBaseUrl: (apiBaseUrl || '').trim() || current.apiBaseUrl,
+    apiKey: apiKey && apiKey.trim() ? apiKey.trim() : current.apiKey,
+    model: (model || '').trim() || current.model,
+    salesProcess: salesProcess !== undefined ? salesProcess : current.salesProcess
+  });
+
+  res.redirect('/admin?saved=1');
+});
+
+app.post('/admin/api/chat-test', requireAdmin, chatLimiter, async (req, res) => {
+  const settings = loadSettings();
+
+  if (!settings.apiKey) {
+    return res.status(400).json({ ok: false, error: 'Chưa nhập API key.' });
+  }
+
+  const message = String(req.body.message || '').trim().slice(0, 1000);
+  const history = Array.isArray(req.body.history) ? req.body.history.slice(-20) : [];
+
+  if (!message) {
+    return res.status(400).json({ ok: false, error: 'Vui lòng nhập nội dung.' });
+  }
+
+  try {
+    const { cleanText, lead } = await callAI({ settings, studio: STUDIO, history, message });
+    return res.json({ ok: true, reply: cleanText, wouldSaveLead: lead });
+  } catch (err) {
+    console.error('AI test chat error:', err.message);
+    return res.status(502).json({ ok: false, error: err.message });
   }
 });
 

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<% var title = 'Bảng điều khiển Admin | ' + studio.name; %>
+<%- include('../partials/head') %>
+</head>
+<body>
+<header class="admin-header">
+  <div class="container admin-header-inner">
+    <a href="/" class="brand">LE HIEP <span>STUDIO</span></a>
+    <form method="POST" action="/admin/logout">
+      <button type="submit" class="btn btn-outline">Đăng xuất</button>
+    </form>
+  </div>
+</header>
+
+<main class="admin-main">
+  <div class="container admin-grid">
+
+    <section class="admin-card">
+      <p class="eyebrow">Trợ lý AI tư vấn</p>
+      <h2 class="section-title">Cài đặt & đào tạo AI</h2>
+      <p class="section-sub">Kết nối API của bất kỳ AI nào tương thích chuẩn OpenAI (OpenAI, DeepSeek, Groq...). API key chỉ lưu trên server, không bao giờ gửi ra trình duyệt khách.</p>
+
+      <% if (saved) { %>
+      <p class="form-status" data-state="ok">Đã lưu cài đặt.</p>
+      <% } %>
+
+      <form method="POST" action="/admin/settings" class="admin-form" id="settings-form">
+        <label class="field-toggle">
+          <input type="checkbox" name="aiEnabled" <%= settings.aiEnabled ? 'checked' : '' %>>
+          <span>Bật trợ lý AI trên website</span>
+        </label>
+        <% if (!hasApiKey) { %>
+        <p class="field-hint field-hint-warn">Cần nhập và lưu API key trước khi bật.</p>
+        <% } %>
+
+        <div class="field">
+          <label for="apiBaseUrl">API Base URL</label>
+          <input type="text" id="apiBaseUrl" name="apiBaseUrl" value="<%= settings.apiBaseUrl %>" placeholder="https://api.openai.com/v1">
+          <p class="field-hint">Phần gốc của API, hệ thống sẽ tự gọi <code>/chat/completions</code>.</p>
+        </div>
+
+        <div class="field">
+          <label for="apiKey">API Key</label>
+          <input type="password" id="apiKey" name="apiKey" placeholder="<%= hasApiKey ? 'Đã lưu — để trống nếu không đổi' : 'sk-...' %>" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label for="model">Model</label>
+          <input type="text" id="model" name="model" value="<%= settings.model %>" placeholder="gpt-4o-mini">
+        </div>
+
+        <div class="field">
+          <label for="salesProcess">Quy trình tư vấn &amp; chốt lịch (đào tạo AI theo cách của bạn)</label>
+          <textarea id="salesProcess" name="salesProcess" rows="12"><%= settings.salesProcess %></textarea>
+          <p class="field-hint">Viết các bước AI cần làm khi tư vấn khách — kể cả cách đề xuất/chốt ngày giờ hẹn theo lịch rảnh thực tế của bạn. AI sẽ bám theo đúng quy trình này.</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
+      </form>
+    </section>
+
+    <section class="admin-card">
+      <p class="eyebrow">Luyện AI</p>
+      <h2 class="section-title">Thử trò chuyện trước khi dùng thật</h2>
+      <p class="section-sub">Đóng vai khách để kiểm tra AI có tư vấn và chốt lịch đúng như quy trình bạn vừa lưu không. Cuộc trò chuyện ở đây <strong>không</strong> được lưu vào danh sách khách thật.</p>
+
+      <div class="chat-test" id="chat-test">
+        <div class="chat-test-log" id="chat-test-log"></div>
+        <form class="chat-test-form" id="chat-test-form">
+          <input type="text" id="chat-test-input" placeholder="Nhập tin nhắn thử, ví dụ: Chào shop, mình muốn chụp ảnh cổ trang..." autocomplete="off">
+          <button type="submit" class="btn btn-primary">Gửi</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="admin-card admin-card-wide">
+      <p class="eyebrow">Khách hàng</p>
+      <h2 class="section-title">Danh sách khách để lại thông tin (<%= leads.length %>)</h2>
+
+      <% if (leads.length === 0) { %>
+      <p class="section-sub">Chưa có khách nào để lại thông tin.</p>
+      <% } else { %>
+      <div class="leads-table-wrap">
+        <table class="leads-table">
+          <thead>
+            <tr>
+              <th>Thời gian</th>
+              <th>Tên</th>
+              <th>SĐT/Zalo</th>
+              <th>Nguồn</th>
+              <th>Ngày hẹn</th>
+              <th>Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% leads.forEach(function(l){ %>
+            <tr>
+              <td><%= new Date(l.createdAt).toLocaleString('vi-VN') %></td>
+              <td><%= l.name %></td>
+              <td><a href="tel:<%= l.phone %>"><%= l.phone %></a></td>
+              <td><span class="tag"><%= l.source === 'ai-chat' ? 'AI Chat' : 'Form' %></span></td>
+              <td><%= l.bookingDate || '—' %></td>
+              <td><%= l.note || l.service || '—' %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </section>
+
+  </div>
+</main>
+
+<script src="/js/admin.js?v=<%= assetVersion %>" defer></script>
+</body>
+</html>

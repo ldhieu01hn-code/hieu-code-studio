@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<% var title = 'Đăng nhập Admin | ' + studio.name; %>
+<%- include('../partials/head') %>
+</head>
+<body>
+<main class="admin-auth">
+  <form class="admin-auth-card" method="POST" action="/admin/login" novalidate>
+    <p class="eyebrow">Admin</p>
+    <h1>Đăng nhập quản trị</h1>
+    <p class="section-sub">Khu vực cài đặt AI tư vấn và xem danh sách khách — chỉ dành cho chủ studio.</p>
+
+    <% if (error) { %>
+    <p class="form-status" data-state="err"><%= error %></p>
+    <% } %>
+
+    <div class="field">
+      <label for="password">Mật khẩu</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required autofocus>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+    <a href="/" class="link-underline admin-back">← Về trang chủ</a>
+  </form>
+</main>
+</body>
+</html>
